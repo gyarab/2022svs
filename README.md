@@ -1,4 +1,3 @@
-<h3 align=center>Skripty k studentskému vývojovému serveru AVAVA</h3>
+<h3 align=center>Skripty ke studentskému vývojovému serveru AVAVA</h3>
 
- - `avava-hello/`
-   Systém pro automatické registrace a obnovu přístupu.
+ - `avava-hello/`: systém pro automatické registrace a obnovu přístupu.
