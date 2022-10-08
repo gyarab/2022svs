@@ -3,13 +3,17 @@ from googleoauth import get_email, get_session_token
 import pwd
 import stat
 import syslog
+import sys
+import traceback
 
 
 def create_account(username):
+    syslog.syslog(f"avava-hello: creating user {username}")
     print("Tvorba novych uctu je v tuto chvili pozastavena")
 
 
 def recover_account(username):
+    syslog.syslog(f"avava-hello: recovering user {username}")
     print(
         'Zadejte novy SSH klic ve forme "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost"'
     )
@@ -55,21 +59,25 @@ def main():
         code = input("Vygenerovany kod: ")
 
     if len(code) > 128 or len(code) <= 0:
+        syslog.syslog("avava-hello: rejecting token; invalid length")
         print("Neplatny kod")
         return
 
     token = get_session_token("https://auth.svs.gyarab.cz/redirect", code)
     if token is None:
+        syslog.syslog("avava-hello: rejecting token; rejected by google")
         print("Neplatny kod")
         return
 
     email = get_email(token)
     if email is None:
+        syslog.syslog("avava-hello: rejecting token; invalid email?")
         print("Neplatny email?!")
         return
     username = email.split("@")[0]
 
     print(f"Uspesne prihlasen jako: {username}")
+    syslog.syslog(f"avava-hello: user {username} logged in")
     try:
         pwd.getpwnam(username)
     except KeyError:
@@ -83,5 +91,15 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        stk = [
+            f"{s[0].split('/')[-1]}:{s[1]}:{s[2]}"
+            for s in traceback.extract_tb(sys.exc_info()[2])
+        ][:5]
+        syslog.syslog(f"avava-hello: ERROR: func stack: {stk}")
+        syslog.syslog(f"avava-hello: ERROR: {e.__class__.__name__}: {e}")
+        print("Nastala necekana chyba, prosim kontaktujte administratora")
+
     print()
