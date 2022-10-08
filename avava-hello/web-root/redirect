@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>auth.svs.gyarab</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://svs.gyarab.cz/styles.css" rel="stylesheet">
+</head>
+
+<body>
+    <main>
+        <div id=success style="display: none">
+            <h1>Váš kód je:</h1>
+            <pre id=code></pre>
+            <p>Můžete se přihlásit rovnou pomocí:</p>
+            <pre id=sshembedded></pre>
+        </div>
+        <div id=error style="display: none">
+            <h2>Špatně vygenerovaný odkaz, zkuste se přihlásit znovu.</h2>
+        </div>
+        <p>
+            <a href="/">Znovu se přihlásit</a> | <a href="/about">About</a>
+        </p>
+    </main>
+    <script>
+        const query = new URLSearchParams(document.location.search);
+        const code = query.get("code");
+        if (code === null) {
+            document.getElementById("error").style.display = "initial";
+        } else {
+            document.getElementById("success").style.display = "initial";
+            document.getElementById("code").innerText = code;
+            document.getElementById("sshembedded").innerText = `$ ssh hello@svs.gyarab.cz ${code}`;
+        }
+    </script>
+</body>
+
+</html>

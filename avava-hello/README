@@ -1,0 +1,5 @@
+User creation and administration script meant to be run
+as a ForcedCommand when a user connects to hello@svs.gyarab.cz.
+
+A build is just a zip archive of the `hello` folder. You can
+run the archive using the standard CPython interpreter.

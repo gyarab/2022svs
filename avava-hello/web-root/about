@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>auth.svs.gyarab</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://svs.gyarab.cz/styles.css" rel="stylesheet">
+</head>
+
+<body>
+    <main>
+        <h1>Dokumentace přihlášení</h1>
+        <p>
+            Přihlašovací / administrační kód se jmenuje <code>avava-hello</code> a je veřejně
+            dostupný v <a href="https://github.com/gyarab/2022svs">gyarab/2022svs</a> repozitáři.
+        </p>
+    </main>
+</body>
+
+</html>
