@@ -2,6 +2,7 @@ import os
 from googleoauth import get_email, get_session_token
 import pwd
 import stat
+import syslog
 
 
 def create_account(username):
@@ -30,9 +31,8 @@ def recover_account(username):
 def main():
     code = os.getenv("SSH_ORIGINAL_COMMAND", "")
 
-    if len(code) == 0:
-        print(
-            """\u001b[0;34m
+    print(
+        """\u001b[0;34m
             .:-========-:
           -===+=+***+==+===.
         :+-=+-.:#%%%%=.:==-+:     \u001b[1mVitejte na serveru AVAVA!\u001b[0;34m
@@ -49,7 +49,9 @@ def main():
     Pro vytvoreni noveho uctu se prihlaste pomoci sveho studentskeho 
     @student.gyarab.cz Google uctu zde: \u001b[4mhttps://auth.svs.gyarab.cz/\u001b[0m.
 """
-        )
+    )
+
+    if len(code) == 0:
         code = input("Vygenerovany kod: ")
 
     if len(code) > 128 or len(code) <= 0:
