@@ -5,11 +5,49 @@ import stat
 import syslog
 import sys
 import traceback
+import signal
+import subprocess
 
 
 def create_account(username):
     syslog.syslog(f"avava-hello: creating user {username}")
-    print("Tvorba novych uctu je v tuto chvili pozastavena")
+
+    # ignore all kill/interrupt/hup signals, we must now quit during the
+    # user creation process
+    sighup_orig = signal.signal(signal.SIGHUP, signal.SIG_IGN)
+    sigint_orig = signal.signal(signal.SIGINT, signal.SIG_IGN)
+    sigter_orig = signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    try:
+        output = subprocess.check_output(["/opt/avava-hello/createuser.sh", username])
+        syslog.syslog(f"avava-hello: createuser.sh output:\n{output.decode()}")
+    except subprocess.CalledProcessError as e:
+        syslog.syslog(f"avava-hello: ERROR: createuser.sh returned code {e.returncode}:\n{e.output.decode()}")
+        print("Nastala neocekavana chyba pri tvorbe uctu. Prosim kontaktujte administratora.")
+        return
+
+    # restore kill signals
+    signal.signal(signal.SIGHUP, sighup_orig)
+    signal.signal(signal.SIGINT, sigint_orig)
+    signal.signal(signal.SIGTERM, sigter_orig)
+
+    print(
+        "\nUcet byl uspesne vytvoren, prihlaseni je mozne pouze pres\n"
+        "SSH klice (Google: SSH private/public key authentication).\n\n"
+        "Prosim vytvorte si klic a vlozte sem jeho verejnou cast\n"
+        "ve forme \"ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost\""
+    )
+    ssh_key = input("> ").strip()
+    with open(f"/home/{username}/.ssh/authorized_keys", "a+") as f:
+        f.write(ssh_key + "\n")
+
+    print(
+        "\nKlic pridan do authorized_keys, zkuste se prihlasit. Vice informaci\n"
+        "muzete nalezt v souboru ~/VITEJ.md (cat ~/VITEJ.md) pote co se prihlasite.\n"
+        "Pokud mate problemy s prihlasenim, obratte se na\n"
+        "adam.suchy<at>student.gyarab.cz, rad vam pomuzu :)"
+    )
+
+
 
 
 def recover_account(username):
@@ -17,7 +55,7 @@ def recover_account(username):
     print(
         'Zadejte novy SSH klic ve forme "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost"'
     )
-    key = input("> ")
+    key = input("> ").strip()
     user_home = f"/home/{username}"
     os.makedirs(user_home + "/.ssh", exist_ok=True)
     with open(f"/home/{username}/.ssh/authorized_keys", "a+") as f:
@@ -100,6 +138,6 @@ if __name__ == "__main__":
         ][:5]
         syslog.syslog(f"avava-hello: ERROR: func stack: {stk}")
         syslog.syslog(f"avava-hello: ERROR: {e.__class__.__name__}: {e}")
-        print("Nastala necekana chyba, prosim kontaktujte administratora")
+        print("Nastala neocekavana chyba, prosim kontaktujte administratora")
 
     print()
