@@ -112,7 +112,15 @@ def main():
         syslog.syslog("avava-hello: rejecting token; invalid email?")
         print("Neplatny email?!")
         return
-    username = email.split("@")[0]
+    username, domain = email.split("@")
+    if domain != "student.gyarab.cz":
+        syslog.syslog(f"avava-hello: rejecting token; email not from gyarab {username}@{domain}")
+        print("Ucet neni z gyarab. Prosim pouzijte svuj studentsky ucet.")
+        return
+    if "+" in username:
+        syslog.syslog(f"avava-hello: rejecting token; email has contains a + '{username}'")
+        print('The "+" character is not allowed in emails. Please use your address directly.')
+        return
 
     print(f"Uspesne prihlasen jako: {username}")
     syslog.syslog(f"avava-hello: user {username} logged in")
