@@ -19,11 +19,6 @@ kdyžtak za vás :) (sám to také musím povolit ve firewall)
 Na portu 443 (HTTPS) a 80 (HTTP) běží `caddy` server [1]. Konfigurační soubor lze pouze upravovat
 jako root. Normální uživatelé mohou využít příkaz `sudo avava-web`, aby si zaregistrovali doménu
 `<cokoliv>.svs.gyarab.cz`^.
-```
-cokoliv.gyarab.cz {
-  # obsah souboru /var/caddy.conf.d/cokoliv
-}
-```
 
 Caddy si automaticky obstará TLS certifikát, takže bude web fungovat i přes HTTPS. Výchozí
 nastavení je zkusit nalézt soubor v `/var/caddy.root.d/cokoliv/` a pokud není nalezen,
