@@ -94,6 +94,7 @@ def register(current_user, db) -> int:
     )
     conf_path.write_text(caddyfile)
     shutil.copy("/opt/avava-web/default.index.html", root_path / "index.html")
+    os.chown(root_path / "index.html", usr[2], usr[3])
 
     # load new caddy config
     reload_caddy_cfg()
@@ -175,6 +176,10 @@ def help(*_) -> int:
 
 
 def main():
+    if pwd.getpwuid(os.getuid())[0] != "root":
+        print("Tento skript lze pouze spustit jako root: sudo avava-web ...")
+        return 1
+
     if len(sys.argv) < 2:
         help(None)
         return 0
