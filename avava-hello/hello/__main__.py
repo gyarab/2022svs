@@ -21,8 +21,12 @@ def create_account(username):
         output = subprocess.check_output(["/opt/avava-hello/createuser.sh", username])
         syslog.syslog(f"avava-hello: createuser.sh output:\n{output.decode()}")
     except subprocess.CalledProcessError as e:
-        syslog.syslog(f"avava-hello: ERROR: createuser.sh returned code {e.returncode}:\n{e.output.decode()}")
-        print("Nastala neocekavana chyba pri tvorbe uctu. Prosim kontaktujte administratora.")
+        syslog.syslog(
+            f"avava-hello: ERROR: createuser.sh returned code {e.returncode}:\n{e.output.decode()}"
+        )
+        print(
+            "Nastala neocekavana chyba pri tvorbe uctu. Prosim kontaktujte administratora."
+        )
         return
 
     # restore kill signals
@@ -34,7 +38,7 @@ def create_account(username):
         "\nUcet byl uspesne vytvoren, prihlaseni je mozne pouze pres\n"
         "SSH klice (Google: SSH private/public key authentication).\n\n"
         "Prosim vytvorte si klic a vlozte sem jeho verejnou cast\n"
-        "ve forme \"ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost\""
+        've forme "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost"'
     )
     ssh_key = input("> ").strip()
     with open(f"/home/{username}/.ssh/authorized_keys", "a+") as f:
@@ -46,8 +50,6 @@ def create_account(username):
         "Pokud mate problemy s prihlasenim, obratte se na\n"
         "adam.suchy<at>student.gyarab.cz, rad vam pomuzu :)"
     )
-
-
 
 
 def recover_account(username):
@@ -114,12 +116,18 @@ def main():
         return
     username, domain = email.split("@")
     if domain != "student.gyarab.cz":
-        syslog.syslog(f"avava-hello: rejecting token; email not from gyarab {username}@{domain}")
+        syslog.syslog(
+            f"avava-hello: rejecting token; email not from gyarab {username}@{domain}"
+        )
         print("Ucet neni z gyarab. Prosim pouzijte svuj studentsky ucet.")
         return
     if "+" in username:
-        syslog.syslog(f"avava-hello: rejecting token; email has contains a + '{username}'")
-        print('The "+" character is not allowed in emails. Please use your address directly.')
+        syslog.syslog(
+            f"avava-hello: rejecting token; email has contains a + '{username}'"
+        )
+        print(
+            'The "+" character is not allowed in emails. Please use your address directly.'
+        )
         return
 
     print(f"Uspesne prihlasen jako: {username}")
