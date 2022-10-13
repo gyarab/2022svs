@@ -55,7 +55,7 @@ def create_account(username):
 def recover_account(username):
     syslog.syslog(f"avava-hello: recovering user {username}")
     print(
-        'Zadejte novy SSH klic ve forme "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost"'
+        'Zadejte novy SSH klic ve forme "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost" (OpenSSH)'
     )
     key = input("> ").strip()
     user_home = f"/home/{username}"
