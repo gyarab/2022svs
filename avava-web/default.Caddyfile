@@ -1,0 +1,10 @@
+{domain}.svs.gyarab.cz {{
+    root * /var/caddy.root.d/{domain}
+    @notStatic {{
+        not file {{
+            try_files {{path}} {{path}}/index.html
+        }}
+    }}
+    reverse_proxy @notStatic 127.0.0.1:{port}
+    file_server
+}}
