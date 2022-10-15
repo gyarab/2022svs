@@ -35,22 +35,20 @@ def register(current_user, db) -> int:
     domain = sys.argv[2]
     domain_regex = re.compile(r"^[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9]$")
     if not re.match(domain_regex, domain):
-        syslog.syslog(
-            f"avava-web: denied registration for {current_user} of '{domain}'"
-        )
+        syslog.syslog(f"denied registration for {current_user} of '{domain}'")
         print(
             'Domena nesmi zacinat, ci koncit "-". Povolene znaky jsou A-Z, a-z, 0-9 a "-"'
         )
         return 1
 
-    syslog.syslog(f"avava-web: registering domain '{domain}' for {current_user}")
+    syslog.syslog(f"registering domain '{domain}' for {current_user}")
 
     if (
         len(list(filter(lambda x: x["user"] == current_user, db))) == 2
         and current_user != "root"
     ):
         syslog.syslog(
-            f"avava-web: denied registering domain for {current_user}, user already has 2 domains"
+            f"denied registering domain for {current_user}, user already has 2 domains"
         )
         print("Kazdy uzivatel muze mit pouze 2 zaregistrovane domeny")
         return 1
@@ -58,7 +56,7 @@ def register(current_user, db) -> int:
     existing = next(filter(lambda x: x["domain"] == domain, db), None)
     if existing is not None:
         syslog.syslog(
-            f"avava-web: denied registering domain for {current_user}, domain already registered"
+            f"denied registering domain for {current_user}, domain already registered"
         )
         print("Tato domena je jiz zaregistrovana")
         return 1
@@ -102,7 +100,7 @@ def register(current_user, db) -> int:
         f"Domena '{domain}' zaregistrovana. Aplikacni server muzete spustit na portu {random_port}."
     )
     syslog.syslog(
-        f"avava-web: domain '{domain}' registered for {current_user} on port {random_port}"
+        f"domain '{domain}' registered for {current_user} on port {random_port}"
     )
     return 0
 
@@ -116,15 +114,13 @@ def unregister(current_user, db) -> int:
     entry = next(filter(lambda x: x["domain"] == domain, db), None)
     if entry is None:
         syslog.syslog(
-            f"avava-web: refusing to unregister non-existant domain {domain=}, {current_user=}"
+            f"refusing to unregister non-existant domain {domain=}, {current_user=}"
         )
         print("Domena neni zaregistrovana")
         return 1
 
     if current_user != "root" and entry["user"] != current_user:
-        syslog.syslog(
-            f"avava-web: refusing to unregister domain {domain=}, {current_user=}"
-        )
+        syslog.syslog(f"refusing to unregister domain {domain=}, {current_user=}")
         print("Toto neni vase domena")
         return 1
 
@@ -224,8 +220,8 @@ if __name__ == "__main__":
             f"{s[0].split('/')[-1]}:{s[1]}:{s[2]}"
             for s in traceback.extract_tb(sys.exc_info()[2])
         ][:5]
-        syslog.syslog(f"avava-web: ERROR: func stack: {stk}")
-        syslog.syslog(f"avava-web: ERROR: {e.__class__.__name__}: {e}")
+        syslog.syslog(syslog.LOG_ERR, f"ERROR: func stack: {stk}")
+        syslog.syslog(syslog.LOG_ERR, f"ERROR: {e.__class__.__name__}: {e}")
         print("Nastala neocekavana chyba, prosim kontaktujte administratora")
         exit(1)
     finally:
