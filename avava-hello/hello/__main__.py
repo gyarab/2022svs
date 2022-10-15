@@ -10,7 +10,7 @@ import subprocess
 
 
 def create_account(username):
-    syslog.syslog(f"avava-hello: creating user {username}")
+    syslog.syslog(f"creating user {username}")
 
     # ignore all kill/interrupt/hup signals, we must now quit during the
     # user creation process
@@ -19,10 +19,11 @@ def create_account(username):
     sigter_orig = signal.signal(signal.SIGTERM, signal.SIG_IGN)
     try:
         output = subprocess.check_output(["/opt/avava-hello/createuser.sh", username])
-        syslog.syslog(f"avava-hello: createuser.sh output:\n{output.decode()}")
+        syslog.syslog(f"createuser.sh output:\n{output.decode()}")
     except subprocess.CalledProcessError as e:
         syslog.syslog(
-            f"avava-hello: ERROR: createuser.sh returned code {e.returncode}:\n{e.output.decode()}"
+            syslog.LOG_ERR,
+            f"ERROR: createuser.sh returned code {e.returncode}:\n{e.output.decode()}",
         )
         print(
             "Nastala neocekavana chyba pri tvorbe uctu. Prosim kontaktujte administratora."
@@ -54,7 +55,7 @@ def create_account(username):
 
 
 def recover_account(username):
-    syslog.syslog(f"avava-hello: recovering user {username}")
+    syslog.syslog(f"recovering user {username}")
     print(
         'Zadejte novy SSH klic ve forme "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost" (OpenSSH format, bez "")'
     )
@@ -100,31 +101,32 @@ def main():
         code = input("Vygenerovany kod: ")
 
     if len(code) > 128 or len(code) <= 0:
-        syslog.syslog("avava-hello: rejecting token; invalid length")
+        syslog.syslog("rejecting token; invalid length")
         print("Neplatny kod")
         return
 
     token = get_session_token("https://auth.svs.gyarab.cz/redirect", code)
     if token is None:
-        syslog.syslog("avava-hello: rejecting token; rejected by google")
+        syslog.syslog("rejecting token; rejected by google")
         print("Neplatny kod")
         return
 
     email = get_email(token)
     if email is None:
-        syslog.syslog("avava-hello: rejecting token; invalid email?")
+        syslog.syslog(syslog.LOG_WARNING, "rejecting token; invalid email?")
         print("Neplatny email?!")
         return
     username, domain = email.split("@")
     if domain != "student.gyarab.cz":
         syslog.syslog(
-            f"avava-hello: rejecting token; email not from gyarab {username}@{domain}"
+            syslog.LOG_WARNING,
+            f"rejecting token; email not from gyarab {username}@{domain}",
         )
         print("Ucet neni z gyarab. Prosim pouzijte svuj studentsky ucet.")
         return
     if "+" in username:
         syslog.syslog(
-            f"avava-hello: rejecting token; email has contains a + '{username}'"
+            syslog.LOG_WARNING, f"rejecting token; email has contains a + '{username}'"
         )
         print(
             'The "+" character is not allowed in emails. Please use your address directly.'
@@ -132,7 +134,7 @@ def main():
         return
 
     print(f"Uspesne prihlasen jako: {username}")
-    syslog.syslog(f"avava-hello: user {username} logged in")
+    syslog.syslog(f"user {username} logged in")
     try:
         pwd.getpwnam(username)
     except KeyError:
@@ -153,8 +155,8 @@ if __name__ == "__main__":
             f"{s[0].split('/')[-1]}:{s[1]}:{s[2]}"
             for s in traceback.extract_tb(sys.exc_info()[2])
         ][:5]
-        syslog.syslog(f"avava-hello: ERROR: func stack: {stk}")
-        syslog.syslog(f"avava-hello: ERROR: {e.__class__.__name__}: {e}")
+        syslog.syslog(syslog.LOG_ERR, f"ERROR: func stack: {stk}")
+        syslog.syslog(syslog.LOG_ERR, f"ERROR: {e.__class__.__name__}: {e}")
         print("Nastala neocekavana chyba, prosim kontaktujte administratora")
 
     print()
