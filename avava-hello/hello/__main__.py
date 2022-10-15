@@ -148,6 +148,8 @@ def main():
 
 
 if __name__ == "__main__":
+    syslog.openlog("avava-hello")
+
     try:
         main()
     except Exception as e:

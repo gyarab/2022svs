@@ -208,6 +208,8 @@ def main():
 
 
 if __name__ == "__main__":
+    syslog.openlog("avava-web")
+
     lockfile = Path("/tmp/avava-web.lock")
     if lockfile.exists():
         print("Zkuste to znovu. Jedna instance avava-web jiz bezi.")
