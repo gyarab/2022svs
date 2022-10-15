@@ -35,10 +35,10 @@ def create_account(username):
     signal.signal(signal.SIGTERM, sigter_orig)
 
     print(
-        "\nUcet byl uspesne vytvoren, prihlaseni je mozne pouze pres\n"
+        f"\nUcet {username} byl uspesne vytvoren, prihlaseni je mozne pouze pres\n"
         "SSH klice (Google: SSH private/public key authentication).\n\n"
         "Prosim vytvorte si klic a vlozte sem jeho verejnou cast\n"
-        've forme "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost"'
+        've forme "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost" (OpenSSH format, bez "")'
     )
     ssh_key = input("> ").strip()
     with open(f"/home/{username}/.ssh/authorized_keys", "a+") as f:
@@ -48,14 +48,15 @@ def create_account(username):
         "\nKlic pridan do authorized_keys, zkuste se prihlasit. Vice informaci\n"
         "muzete nalezt v souboru ~/VITEJ.md (cat ~/VITEJ.md) pote co se prihlasite.\n"
         "Pokud mate problemy s prihlasenim, obratte se na\n"
-        "adam.suchy<at>student.gyarab.cz, rad vam pomuzu :)"
+        "adam.suchy<at>student.gyarab.cz, rad vam pomuzu :)\n\n"
+        f"ssh {username}@svs.gyarab.cz"
     )
 
 
 def recover_account(username):
     syslog.syslog(f"avava-hello: recovering user {username}")
     print(
-        'Zadejte novy SSH klic ve forme "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost" (OpenSSH)'
+        'Zadejte novy SSH klic ve forme "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost" (OpenSSH format, bez "")'
     )
     key = input("> ").strip()
     user_home = f"/home/{username}"
