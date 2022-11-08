@@ -47,8 +47,8 @@ def create_account(username):
 
     print(
         "\nKlic pridan do authorized_keys, zkuste se prihlasit. Vice informaci\n"
-        "muzete nalezt v souboru ~/VITEJ.md (cat ~/VITEJ.md) pote co se prihlasite.\n"
-        "Pokud mate problemy s prihlasenim, obratte se na\n"
+        "muzete nalezt v souboru ~/VITEJ.md (nebo web: svs.gyarab.cz/vitej) pote\n"
+        "co se prihlasite. Pokud mate problemy s prihlasenim, obratte se na\n"
         "adam.suchy<at>student.gyarab.cz, rad vam pomuzu :)\n\n"
         f"ssh {username}@svs.gyarab.cz"
     )
