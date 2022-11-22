@@ -51,6 +51,8 @@ db_pass=`pwgen -B -1 15`;
     echo "CREATE DATABASE "db$db_id" WITH OWNER "db$db_id";";
     echo "REVOKE ALL ON DATABASE "db$db_id" FROM PUBLIC;";
 } | psql -U postgres
+# correct public schema owner
+psql -U postgres -d "db$db_id" -c "ALTER SCHEMA public OWNER TO \"db$db_id\"";
 
 # Add DB login info to .pgpass and set PGUSER in .profile
 touch "/home/$user/.pgpass";
