@@ -2,7 +2,7 @@
 # Vítej na serveru AVAVA!
 
 > Soubor lze otevřít na webu:
-> https://svs.gyarab.cz/VITEJ.md
+> https://svs.gyarab.cz/vitej
 
 ## Jak je možné se připojit?
 
@@ -70,6 +70,11 @@ Sice je registrační proces automatizovaný, ale neočekávám, že nenastanou 
 že tu bude všechno nainstalované, *ptejte se kdyby něco nefungovalo / když něco potřebujete*!
 
 `adam.suchy<at>student.gyarab.cz`
+
+## Údržby / notifikace
+
+Pro přihlášení se k odběru zpráv o údržbách AVAVy můžete využít příkaz `sudo
+avava-notifier`. Pro odhlášení ho spusťte znovu.
 
 
 A ještě jednou, prosím nedělejte neplechu :) Logů je dost na osobní identifikaci.
