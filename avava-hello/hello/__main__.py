@@ -218,5 +218,7 @@ if __name__ == "__main__":
         syslog.syslog(syslog.LOG_ERR, f"ERROR: func stack: {stk}")
         syslog.syslog(syslog.LOG_ERR, f"ERROR: {e.__class__.__name__}: {e}")
         print("Nastala neocekavana chyba, prosim kontaktujte administratora")
+    except KeyboardInterrupt:
+        pass
 
     print()
