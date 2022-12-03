@@ -11,7 +11,7 @@
     <main class="container">
         <h1>Vítejte na studentském vývojovém serveru AVAVA</h1>
         <p>
-            Server je k dispozici zákům Gymnázia Arabská pro vzdělávací účely.
+            Server je k dispozici žákům Gymnázia Arabská pro vzdělávací účely.
             Studenti si tu mohou například hostovat stránky svého ročníkového projektu,
             nebo je protunelovat a zabezpečit pomocí SSH a automatického HTTPS.
         </p>
@@ -32,8 +32,23 @@
             </details>
         </p>
         <p><small>Na serveru logy nešetříme, prosím neprovádějte žádné neplechy :)</small></p>
-	<p>Kontakt: adam.suchy&lt;at&gt;student.gyarab.cz</p>
+        <p>Kontakt: adam.suchy&lt;at&gt;student.gyarab.cz</p>
 
+        <hr/>
+            <h2>Bezpečností upozornění a administrační zákroky</h2>
+        <div style="max-height: 15em; overflow-y: scroll;">
+            <p> 
+                <b>2022-11-08:</b> Pro všechny uživatele byl spuštěn skript <code>/opt/profile-fix</code>.
+                Uživateli to správně připíše <code>PGUSER</code> do <code>.profile</code> souboru, aby bylo možné
+                spustit <code>psql</code> bez žádných argumentů.
+            </p>
+            <p>
+                <b>2022-10-31:</b> V často používané knihovně <code>OpenSSL 3.0</code> byla ohlášena kritická 
+                bezpečností chyba. 1. 11. 2022 bude vydána verze <code>3.0.7</code>, která tuto chybu opraví.
+                Na OpenSSL 3.0 závisí PostgreSQL server. 
+                <a href="https://www.openssl.org/blog/blog/2022/11/01/email-address-overflows/">link</a>
+            </p>
+        </div>
     </main>
 </body>
 </html>
