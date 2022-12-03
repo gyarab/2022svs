@@ -7,6 +7,47 @@ import sys
 import traceback
 import signal
 import subprocess
+from base64 import b64decode
+import binascii
+
+
+def check_ssh_key_format(key: str) -> bool:
+    """
+    Checks if input is a correct ssh key, it must not have any ssh options before it.
+
+    Follows:
+    https://man.openbsd.org/sshd#AUTHORIZED_KEYS_FILE_FORMAT
+    """
+    parts = key.split(" ")
+
+    # the key may or may not have a comment
+    if len(parts) < 2 or len(parts) > 3:
+        return False
+
+    type = parts[0]
+    b64key = parts[1]
+
+    # check that the key starts correctly with
+    # a known type
+    if type not in (
+        "sk-ecdsa-sha2-nistp256@openssh.com",
+        "ecdsa-sha2-nistp256",
+        "ecdsa-sha2-nistp384",
+        "ecdsa-sha2-nistp521",
+        "sk-ssh-ed25519@openssh.com",
+        "ssh-ed25519",
+        "ssh-dss",
+        "ssh-rsa",
+    ):
+        return False
+
+    try:
+        # try to decode the base64 encoded string
+        b64decode(b64key)
+    except binascii.Error:
+        return False
+
+    return True
 
 
 def create_account(username):
@@ -39,9 +80,16 @@ def create_account(username):
         f"\nUcet {username} byl uspesne vytvoren, prihlaseni je mozne pouze pres\n"
         "SSH klice (Google: SSH private/public key authentication).\n\n"
         "Prosim vytvorte si klic a vlozte sem jeho verejnou cast\n"
-        've forme "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost" (OpenSSH format, bez "")'
+        've forme "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost" (OpenSSH format)'
     )
-    ssh_key = input("> ").strip()
+
+    ssh_key = ""
+    while True:
+        ssh_key = input("> ").strip().strip('"')
+        if check_ssh_key_format(ssh_key):
+            break
+        print("Toto nevypada jako spravne naformatovany klic. Zkuste to znovu:")
+
     with open(f"/home/{username}/.ssh/authorized_keys", "a+") as f:
         f.write(ssh_key + "\n")
 
@@ -57,13 +105,21 @@ def create_account(username):
 def recover_account(username):
     syslog.syslog(f"recovering user {username}")
     print(
-        'Zadejte novy SSH klic ve forme "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost" (OpenSSH format, bez "")'
+        'Zadejte novy SSH klic ve forme "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost" (OpenSSH format)'
     )
-    key = input("> ").strip()
+    ssh_key = ""
+    while True:
+        ssh_key = input("> ").strip().strip('"')
+        if check_ssh_key_format(ssh_key):
+            break
+        print("Toto nevypada jako spravne naformatovany klic. Zkuste to znovu:")
+
     user_home = f"/home/{username}"
     os.makedirs(user_home + "/.ssh", exist_ok=True)
-    with open(f"/home/{username}/.ssh/authorized_keys", "a+") as f:
-        f.write(key + "\n")
+
+    # overwrite old authorized_keys file in case it got corrupted
+    with open(f"/home/{username}/.ssh/authorized_keys", "w+") as f:
+        f.write(ssh_key + "\n")
 
     # fix permissions
     user = pwd.getpwnam(username)
@@ -142,7 +198,9 @@ def main():
         if ok == "" or ok.lower() == "y":
             create_account(username)
     else:
-        ok = input(f"Ucet {username} jiz existuje, ztratili jste pristup? [Y/n]")
+        ok = input(
+            f"Ucet {username} jiz existuje, ztratili jste pristup?\n(tato akce smaze vsechny predchozi nahrane klice) [Y/n]"
+        )
         if ok == "" or ok.lower() == "y":
             recover_account(username)
 
