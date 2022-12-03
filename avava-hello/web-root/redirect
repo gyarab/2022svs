@@ -12,9 +12,9 @@
     <main>
         <div id=success style="display: none">
             <h1>Váš kód je:</h1>
-            <pre id=code></pre>
+            <pre><code id=code></code></pre>
             <p>Můžete se přihlásit rovnou pomocí:</p>
-            <pre id=sshembedded></pre>
+            <pre><code id=sshembedded></code></pre>
         </div>
         <div id=error style="display: none">
             <h2>Špatně vygenerovaný odkaz, zkuste se přihlásit znovu.</h2>
