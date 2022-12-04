@@ -33,12 +33,12 @@ def register(current_user, db) -> int:
         return 0
 
     domain = sys.argv[2]
-    domain_regex = re.compile(r"^[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9]$")
+    domain_regex = re.compile(
+        r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$"
+    )
     if not re.match(domain_regex, domain):
         syslog.syslog(f"denied registration for {current_user} of '{domain}'")
-        print(
-            'Domena nesmi zacinat, ci koncit "-". Povolene znaky jsou A-Z, a-z, 0-9 a "-"'
-        )
+        print(f'"{domain}" neni platna domena')
         return 1
 
     syslog.syslog(f"registering domain '{domain}' for {current_user}")
@@ -50,7 +50,10 @@ def register(current_user, db) -> int:
         syslog.syslog(
             f"denied registering domain for {current_user}, user already has 2 domains"
         )
-        print("Kazdy uzivatel muze mit pouze 2 zaregistrovane domeny")
+        print(
+            "Kazdy uzivatel muze mit pouze 2 zaregistrovane domeny,\n"
+            "v pripade, ze jich potrebujete vice, kontaktujte administratora."
+        )
         return 1
 
     existing = next(filter(lambda x: x["domain"] == domain, db), None)
@@ -161,12 +164,16 @@ def list_(current_user, db) -> int:
 
 def help(*_) -> int:
     print(
-        "Usage: avava-web register|unregister|help|list [cokoliv]\n"
-        "  register     Registruje domenu [cokoliv]\n"
-        "  unregister   Deregistruje domenu [cokoliv]\n"
+        "Usage: avava-web register|unregister|help|list [domena]\n"
+        "  register     Registruje domenu [domena]\n"
+        "  unregister   Deregistruje domenu [domena]\n"
         "  help         Vypise tuto zpravu\n"
         "  list         Vypise vsechny domeny aktualniho uzivatele\n\n"
-        "Skript pro automatickou registraci domeny a HTTP(S) serveru."
+        "Skript pro automatickou registraci domeny a HTTP(S) serveru.\n"
+        "[domena] muze byt jakakoliv domena nasmerovana na tento server.\n"
+        "Na server jsou nasmerovane domeny, ktere muzete vyuzit zdarma:\n"
+        "  - *.svs.gyarab.cz\n"
+        "  - *.ecko.ga"
     )
     return 0
 

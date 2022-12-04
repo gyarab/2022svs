@@ -1,4 +1,4 @@
-{domain}.svs.gyarab.cz {{
+{domain} {{
     root * /var/caddy.root.d/{domain}
     @notStatic {{
         not file {{
