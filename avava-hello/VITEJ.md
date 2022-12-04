@@ -21,6 +21,9 @@ programů nainstalováno.
    - každý má jeden účet a databázi, vše je zaznamenané ve standradním souboru `~/.pgpass`.
    - V `~/.profile` je také přednastavené PGUSER, takže je možné se na DB
      jednoduše připojit pomocí `psql`.
+   - další účty lze vytvořit pomocí `sudo avava-psql`
+ - `MySQL` pro případ, že vaše aplikace potřebuje MySQL specificky. Účet si můžete vytvořit
+   pomocí `sudo avava-mysql`
 
 Pokud je potřeba něco doinstalovat, napište administrátorovi.
 
@@ -37,30 +40,28 @@ nebo popřípadě z počítače tunelovat na server.
 ## Webové stránky
 
 Na portu 443 (HTTPS) a 80 (HTTP) běží `caddy` server [1]. Konfigurační soubor lze pouze upravovat
-jako root. Normální uživatelé mohou využít příkaz `sudo avava-web`, aby si zaregistrovali doménu
-`<cokoliv>.svs.gyarab.cz`^.
+jako root. Normální uživatelé mohou využít příkaz `sudo avava-web`, aby si zaregistrovali doménu.
+Doménu buď musíte vlastnit, nebo můžete využít jakoukoliv ve tvaru `*.svs.gyarab.cz` nebo `*.ecko.ga`.
 
 Caddy si automaticky obstará TLS certifikát, takže bude web fungovat i přes HTTPS. Výchozí
-nastavení je zkusit nalézt soubor v `/var/caddy.root.d/cokoliv/` a pokud není nalezen,
+nastavení je zkusit nalézt soubor v `/var/caddy.root.d/domena/` a pokud není nalezen,
 tak zkusit reverse proxy na zvolený port.
 
 Schéma:
 ```
-   Uživatel           |           Caddy (cokoliv.svs.gyarab.cz:443)   |     Aplikační server (localhost:<zvoleny port>)
+   Uživatel           |           Caddy (abc.svs.gyarab.cz:443)       |     Aplikační server (localhost:<zvoleny port>)
    GET /index.html ---|-->  Je soubor /index.html                     |
-                      |     v /var/caddy.root.d/cokoliv?              |
+                      |     v /var/caddy.root.d/abc.svs.gyarab.cz?    |
                       |     ANO!                                      |
                    <--|---  200 OK ... (soubor)                       |
                       |                                               |
    GET /api/status ---|-->  Je soubor /api/status                     |
-                      |     v /var/caddy.root.d/cokoliv?              |
+                      |     v /var/caddy.root.d/abc.svs.gyarab.cz?    |
                       |     NE =>                  GET /api/status ---|-->   Interní logika
                       |                                               |      zpracuje request
                    <--|---              Přeposílám                 <--|---   200 OK ... (něco)
                       |                                               |
 ```
-
-^ `<cokoliv>` může obsahovat pouze znaky A-Z a-z 0-9 a "-"
 
 [1] https://caddyserver.com/
 
