@@ -44,11 +44,11 @@ def register(current_user, db) -> int:
     syslog.syslog(f"registering domain '{domain}' for {current_user}")
 
     if (
-        len(list(filter(lambda x: x["user"] == current_user, db))) == 2
+        len(list(filter(lambda x: x["user"] == current_user, db))) == 4
         and current_user != "root"
     ):
         syslog.syslog(
-            f"denied registering domain for {current_user}, user already has 2 domains"
+            f"denied registering domain for {current_user}, user already has 4 domains"
         )
         print(
             "Kazdy uzivatel muze mit pouze 2 zaregistrovane domeny,\n"
