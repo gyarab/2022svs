@@ -44,13 +44,13 @@ new_db() {
         echo "GRANT ALL ON $db.* TO '$db'@'localhost';"
         echo "FLUSH PRIVILEGES;";
     } | mysql -sN
-    echo "nazev db: $db";
+    echo "nazev db a uzivatele: $db";
     echo "heslo: $password";
     echo "poznamenejte si heslo, nikdy se znovu nezobrazi";
 }
 
 list_db() {
-    echo "uzivatel database/db_user popisek";
+    echo "uzivatel databaze/db_uzivatel popisek";
     echo "listing db for $1" | logger -t avava-mysql
     if [ "$1" == "root" ]; then
         cat $DB_FILE;
@@ -77,7 +77,8 @@ delete_db() {
 }
 help() {
     echo "sudo avava-psql help|new|list|delete ...";
-    echo "    new <popisek>     vytvori novou databazi s popiskem <popisek>";
+    echo "    new <popisek>     vytvori novou databazi s popiskem <popisek>, popisek je jen";
+    echo "                      pro zapamatovani, nazev i jmeno uzivatele bude vygenerovano";
     echo "    list              zobrazi vsechny vytvorene databaze";
     echo "    delete <db_name>  smaze databazi <db_name>!!";
     echo "    help              zobrazi tuto zpravu";

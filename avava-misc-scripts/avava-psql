@@ -45,7 +45,7 @@ new_db() {
     } | psql -U postgres
     # correct public schema owner
     psql -U postgres -d "$db" -c "ALTER SCHEMA public OWNER TO \"$db\"";
-    echo "nazev db: $db";
+    echo "nazev db a uzivatele: $db";
     echo "heslo: $password";
     echo "poznamenejte si heslo, nikdy se znovu nezobrazi";
 }
@@ -79,7 +79,8 @@ delete_db() {
 }
 help() {
     echo "sudo avava-psql help|new|list|delete ...";
-    echo "    new <popisek>     vytvori novou databazi s popiskem <popisek>";
+    echo "    new <popisek>     vytvori novou databazi s popiskem <popisek>, popisek je jen";
+    echo "                      pro zapamatovani, nazev i jmeno uzivatele bude vygenerovano";
     echo "    list              zobrazi vsechny vytvorene databaze";
     echo "    delete <db_name>  smaze databazi <db_name>!!";
     echo "    help              zobrazi tuto zpravu";
