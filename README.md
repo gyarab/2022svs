@@ -5,5 +5,6 @@
  - `homepage/`: domovská stránka
  - `notifier/`: notifikační systém
  - `avava-misc-scripts/`: další skripty pro administraci
+ - `guides/`: zdrojáky na wiki (https://guides.svs.gyarab.cz)
 
 [Stránky AVAVA](https://avava.gyarab.cz/)

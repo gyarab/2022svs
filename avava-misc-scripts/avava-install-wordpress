@@ -68,4 +68,6 @@ popd;
 
 rm "/var/caddy.root.d/$DOMAIN/index.html" # delete static welcome page
 
+loginctl enable-linger
+
 echo "Wordpress úspěšně spuštěn na adrese \"https://$DOMAIN/\"";
