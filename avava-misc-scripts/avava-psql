@@ -47,9 +47,9 @@ new_db() {
         echo "CREATE ROLE "$db" LOGIN PASSWORD '$password';";
         echo "CREATE DATABASE "$db" WITH OWNER "$db";";
         echo "REVOKE ALL ON DATABASE "$db" FROM PUBLIC;";
-    } | psql -U postgres
+    } | psql -q -U postgres
     # correct public schema owner
-    psql -U postgres -d "$db" -c "ALTER SCHEMA public OWNER TO \"$db\"";
+    psql -q -U postgres -d "$db" -c "ALTER SCHEMA public OWNER TO \"$db\"";
 
     if [[ $SCRIPT -eq 0 ]]; then
         echo "nazev db a uzivatele: $db";
@@ -85,7 +85,7 @@ delete_db() {
     {
         echo "DROP DATABASE \"$2\";";
         echo "DROP ROLE \"$2\";";
-    } | psql -U postgres;
+    } | psql -q -U postgres;
 }
 help() {
     echo "sudo avava-psql help|new|list|delete ...";
