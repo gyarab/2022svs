@@ -1,0 +1,71 @@
+#!/bin/bash
+# Wordpress intallation script
+# depends on podman and other avava misc scripts
+
+set -euo pipefail
+
+err() {
+    echo "$1";
+    exit 1;
+}
+
+[ -z "$1" ] && err "avava-install-wordpress <slozka pro instalaci>";
+
+ROOT="$(realpath $1)"
+
+ask_yes() {
+    read -r -p "$1 [y/N]" resp
+    case "$resp" in
+        [yY])
+        ;;
+    *)
+        exit 0;
+        ;;
+    esac
+}
+
+echo "Jakou si prejete mit domenu? Zdarma muzete mit <cokoliv>.sys.gyarab.cz,"
+echo "jinak musite domenu vlastnit a mit spravne nastaveny"
+echo "CNAME zaznam na \"svs.gyarab.cz.\", nebo A zaznam na IP adresu SVS (viditelna pri prihlaseni)"
+read -r -p "Domena (napr. mujwp.svs.gyarab.cz, nebo mojedomena.cz): " DOMAIN
+
+ask_yes "Nainstalovat wordpress do \"$ROOT\"?";
+
+systemctl --user enable --now podman.socket
+
+mkdir -p "$ROOT" || err "Nelze vytvorit slozku \"$ROOT\"";
+
+o="$(sudo avava-web --script register "$DOMAIN")" || err "$o"
+PORT="$(cut -d " " -f 2 <<< "$o")"
+
+DBCREDS="$(sudo avava-mysql --script new "wordpress@$DOMAIN")"
+
+pushd "$ROOT";
+cat > docker-compose.yml <<EOF
+version: '3'
+
+services:
+    server:
+        image: docker.io/wordpress:latest
+        restart: always
+        network_mode: "slirp4netns:allow_host_loopback=true"
+        environment:
+            WORDPRESS_DB_HOST: "10.0.2.2"
+            WORDPRESS_DB_NAME: "$(cut -d " " -f 1 <<< "$DBCREDS")"
+            WORDPRESS_DB_USER: "$(cut -d " " -f 1 <<< "$DBCREDS")"
+            WORDPRESS_DB_PASSWORD: "$(cut -d " " -f 2 <<< "$DBCREDS")"
+        ports:
+            - "127.0.0.1:$PORT:80"
+        volumes:
+            - "./data:/var/www/html"
+EOF
+
+chmod o-r docker-compose.yml  # file has credentials inside
+
+docker-compose up -d
+
+popd;
+
+rm "/var/caddy.root.d/$DOMAIN/index.html" # delete static welcome page
+
+echo "Wordpress úspěšně spuštěn na adrese \"https://$DOMAIN/\"";
