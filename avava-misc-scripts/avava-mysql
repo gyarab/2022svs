@@ -7,15 +7,20 @@ fi;
 
 DB_FILE=/opt/avava-misc-scripts/avava-mysql-db
 USR=${SUDO_USER:-root}
+SCRIPT=0
 
 ask_yes() {
+    if [[ $SCRIPT -eq 1 ]]; then
+        return;
+    fi;
+
     read -r -p "$1 [y/N]" resp
     case "$resp" in
         [yY])
-	    ;;
-	*)
-	    exit 0;
-	    ;;
+        ;;
+    *)
+        exit 0;
+        ;;
     esac
 }
 
@@ -44,9 +49,14 @@ new_db() {
         echo "GRANT ALL ON $db.* TO '$db'@'localhost';"
         echo "FLUSH PRIVILEGES;";
     } | mysql -sN
-    echo "nazev db a uzivatele: $db";
-    echo "heslo: $password";
-    echo "poznamenejte si heslo, nikdy se znovu nezobrazi";
+
+    if [[ $SCRIPT -eq 0 ]]; then
+        echo "nazev db a uzivatele: $db";
+        echo "heslo: $password";
+        echo "poznamenejte si heslo, nikdy se znovu nezobrazi";
+    else
+        echo "$db $password";
+    fi;
 }
 
 list_db() {
@@ -76,7 +86,7 @@ delete_db() {
     } | mysql -sN
 }
 help() {
-    echo "sudo avava-psql help|new|list|delete ...";
+    echo "sudo avava-mysql help|new|list|delete ...";
     echo "    new <popisek>     vytvori novou databazi s popiskem <popisek>, popisek je jen";
     echo "                      pro zapamatovani, nazev i jmeno uzivatele bude vygenerovano";
     echo "    list              zobrazi vsechny vytvorene databaze";
@@ -84,17 +94,27 @@ help() {
     echo "    help              zobrazi tuto zpravu";
 }
 
-case $1 in
-    new)
-        new_db $@
-    ;;
-    list)
-        list_db $USR
-    ;;
-    delete)
-        delete_db $@
-    ;;
-    *)
-        help
-    ;;
-esac
+while true; do
+    case $1 in
+        --script)
+            SCRIPT=1;
+            shift;
+        ;;
+        new)
+            new_db $@;
+            break;
+        ;;
+        list)
+            list_db $USR;
+            break;
+        ;;
+        delete)
+            delete_db $@;
+            break;
+        ;;
+        *)
+            help;
+            break;
+        ;;
+    esac
+done
