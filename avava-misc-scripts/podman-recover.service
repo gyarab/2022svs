@@ -1,0 +1,13 @@
+[Unit]
+Description=Start containers after boot
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=/run/user/%U/containers
+
+[Service]
+ExecStart=/usr/local/bin/podman-recover
+RemainAfterExit=yes
+Type=oneshot
+
+[Install]
+WantedBy=default.target

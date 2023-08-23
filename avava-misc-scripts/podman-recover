@@ -1,0 +1,9 @@
+#!/bin/bash
+# Start containers that have their restart policy set to always
+# Meant to be run on boot as a oneshot service
+
+podman ps --sync --all --format="{{.ID}}" \
+    | xargs podman inspect --format="{{.ID}} {{.HostConfig.RestartPolicy.Name}}" \
+    | grep " always" \
+    | cut -d " " -f 1 \
+    | xargs podman start
