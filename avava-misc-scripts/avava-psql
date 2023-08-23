@@ -29,9 +29,9 @@ user_exists() {
 }
 
 new_db() {
-    if ! [[ "$2" =~ ^[a-zA-Z0-9]+$ ]]; then
+    if ! [[ "$2" =~ ^[a-zA-Z0-9.@-]+$ ]]; then
         echo "$2";
-        echo "Popisek musi byt ve tvaru [a-zA-Z0-9]+";
+        echo "Popisek musi byt ve tvaru [a-zA-Z0-9.@-]+";
         exit 1;
     fi;
     ask_yes "Prejete si vytvorit novou PostgreSQL databazi s popiskem '$2'?";
