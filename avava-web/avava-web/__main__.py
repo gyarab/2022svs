@@ -11,6 +11,7 @@ import requests_unixsocket
 import syslog
 import traceback
 
+SCIPRT = False
 
 def reload_caddy_cfg():
     with requests_unixsocket.Session() as session:
@@ -27,12 +28,12 @@ def reload_caddy_cfg():
         return resp
 
 
-def register(current_user, db) -> int:
-    if len(sys.argv) < 3:
+def register(current_user, db, args, script=False) -> int:
+    if len(args) == 0:
         help(None)
         return 0
 
-    domain = sys.argv[2]
+    domain = args[0]
     domain_regex = re.compile(
         r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$"
     )
@@ -99,21 +100,24 @@ def register(current_user, db) -> int:
 
     # load new caddy config
     reload_caddy_cfg()
-    print(
-        f"Domena '{domain}' zaregistrovana. Aplikacni server muzete spustit na portu {random_port}."
-    )
+    if script:
+        print(domain, random_port)
+    else:
+        print(
+            f"Domena '{domain}' zaregistrovana. Aplikacni server muzete spustit na portu {random_port}."
+        )
     syslog.syslog(
         f"domain '{domain}' registered for {current_user} on port {random_port}"
     )
     return 0
 
 
-def unregister(current_user, db) -> int:
-    if len(sys.argv) < 3:
+def unregister(current_user, db, args, script=False) -> int:
+    if len(args) == 0:
         help(None)
         return 0
 
-    domain = sys.argv[2]
+    domain = args[0]
     entry = next(filter(lambda x: x["domain"] == domain, db), None)
     if entry is None:
         syslog.syslog(
@@ -127,12 +131,13 @@ def unregister(current_user, db) -> int:
         print("Toto neni vase domena")
         return 1
 
-    ok = input(
-        f"Opravdu si prejete odregistrovat domenu '{domain}' a smazat\n"
-        f"vsechnu konfiguraci a staticke soubory? [y/N]"
-    )
-    if ok.lower() != "y":
-        return 0
+    if not script:
+        ok = input(
+            f"Opravdu si prejete odregistrovat domenu '{domain}' a smazat\n"
+            f"vsechnu konfiguraci a staticke soubory? [y/N]"
+        )
+        if ok.lower() != "y":
+            return 0
 
     conf_path = Path("/var/caddy.conf.d") / domain
     conf_path.unlink()
@@ -143,22 +148,27 @@ def unregister(current_user, db) -> int:
 
     db.remove(entry)
 
-    print("Domena uspesne odregistrovana")
+    if not script:
+        print("Domena uspesne odregistrovana")
 
     return 0
 
 
-def list_(current_user, db) -> int:
+def list_(current_user, db, args, script=False) -> int:
     query = current_user
-    if current_user == "root" and len(sys.argv) >= 3:
-        query = sys.argv[2]
+    if current_user == "root" and len(args) >= 1:
+        query = args[0]
 
     domains = list(filter(lambda x: x["user"] == query, db))
-    print(f"Domeny uzivatele '{query}':")
-    for domain in domains:
-        print(f'  - "{domain["domain"]}": port={domain["port"]}')
-    if len(domains) == 0:
-        print("  zadne")
+    if script:
+        for domain in domains:
+            print(domain["domain"], domain["port"])
+    else:
+        print(f"Domeny uzivatele '{query}':")
+        for domain in domains:
+            print(f'  - "{domain["domain"]}": port={domain["port"]}')
+        if len(domains) == 0:
+            print("  zadne")
     return 0
 
 
@@ -183,9 +193,16 @@ def main():
         print("Tento skript lze pouze spustit jako root: sudo avava-web ...")
         return 1
 
-    if len(sys.argv) < 2:
+    args = sys.argv[1:]
+
+    if len(args) == 0:
         help(None)
         return 0
+
+    is_script = False
+    if args[0] == "--script":
+        is_script = True
+        args.pop(0)
 
     commands = {
         "register": register,
@@ -193,7 +210,7 @@ def main():
         "help": help,
         "list": list_,
     }
-    cmd = commands.get(sys.argv[1], help)
+    cmd = commands.get(args.pop(0), help)
 
     db_file = Path("/var/avava-web/db.json")
     if not db_file.exists():
@@ -205,7 +222,7 @@ def main():
 
     current_user = os.getenv("SUDO_USER", "root")
 
-    code = cmd(current_user, db)
+    code = cmd(current_user, db, args, is_script)
 
     if code == 0:
         with db_file.open("w+") as f:
