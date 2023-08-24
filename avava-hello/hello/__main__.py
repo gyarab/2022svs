@@ -1,7 +1,6 @@
 import os
 from googleoauth import get_email, get_session_token
 import pwd
-import stat
 import syslog
 import sys
 import traceback
@@ -50,6 +49,20 @@ def check_ssh_key_format(key: str) -> bool:
     return True
 
 
+def run_admin_script(path: str, *args: str):
+    try:
+        output = subprocess.check_output(["/usr/bin/env", "sudo", path, *args], stderr=subprocess.STDOUT)
+        syslog.syslog(f"{path} output:\n{output.decode()}")
+    except subprocess.CalledProcessError as e:
+        syslog.syslog(
+            syslog.LOG_ERR,
+            f"ERROR: {path} returned code {e.returncode}:\n{e.output.decode()}",
+        )
+        return False
+    return True
+
+
+
 def create_account(username):
     syslog.syslog(f"creating user {username}")
 
@@ -58,14 +71,7 @@ def create_account(username):
     sighup_orig = signal.signal(signal.SIGHUP, signal.SIG_IGN)
     sigint_orig = signal.signal(signal.SIGINT, signal.SIG_IGN)
     sigter_orig = signal.signal(signal.SIGTERM, signal.SIG_IGN)
-    try:
-        output = subprocess.check_output(["/opt/avava-hello/createuser.sh", username])
-        syslog.syslog(f"createuser.sh output:\n{output.decode()}")
-    except subprocess.CalledProcessError as e:
-        syslog.syslog(
-            syslog.LOG_ERR,
-            f"ERROR: createuser.sh returned code {e.returncode}:\n{e.output.decode()}",
-        )
+    if not run_admin_script("/opt/avava-hello/createuser.sh", username):
         print(
             "Nastala neocekavana chyba pri tvorbe uctu. Prosim kontaktujte administratora."
         )
@@ -114,18 +120,11 @@ def recover_account(username):
             break
         print("Toto nevypada jako spravne naformatovany klic. Zkuste to znovu:")
 
-    user_home = f"/home/{username}"
-    os.makedirs(user_home + "/.ssh", exist_ok=True)
-
-    # overwrite old authorized_keys file in case it got corrupted
-    with open(f"/home/{username}/.ssh/authorized_keys", "w+") as f:
-        f.write(ssh_key + "\n")
-
-    # fix permissions
-    user = pwd.getpwnam(username)
-    os.chown(user_home + "/.ssh", user[2], user[3])
-    os.chown(user_home + "/.ssh/authorized_keys", user[2], user[3])
-    os.chmod(user_home + "/.ssh/authorized_keys", stat.S_IRUSR | stat.S_IWUSR)
+    if not run_admin_script("/opt/avava-hello/recoveruser.sh", username, ssh_key):
+        print(
+            "Nastala neocekavana chyba pri resetovani pristupu. Prosim kontaktujte administratora."
+        )
+        return
 
     print("Klic pridan do authorized_keys, zkuste se prihlasit")
 
@@ -156,7 +155,7 @@ def main():
     if len(code) == 0:
         code = input("Vygenerovany kod: ")
 
-    if len(code) > 128 or len(code) <= 0:
+    if len(code) > 128 or len(code) <= 0 or not code.startswith("4/"):
         syslog.syslog("rejecting token; invalid length")
         print("Neplatny kod")
         return
