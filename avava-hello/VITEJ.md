@@ -14,6 +14,7 @@ veřejný klíč. avava-hello podporuje jen veřejné klíče.
 Bohužel není možné aby tady všichni měli `sudo` práva, takže tu je pár obvyklých
 programů nainstalováno.
 
+ - `Java 11`
  - `Node.js 12` - globálně, pokud potřebujete jinou verzi použijte https://github.com/nvm-sh/nvm
    - k tomu je také globálně nainstalované npm
  - `Python 3.10`, `pip3` můžete také využívat
@@ -29,8 +30,8 @@ Pokud je potřeba něco doinstalovat, napište administrátorovi.
 
 ## Co je tu možné hostovat?
 
-Hostovat je možné jen webové stránky. Toto není moje volba, ale ze strany
-GyArab. K hostování něčeho jiného, než webovky je potřeba se dohodnout s
+Z intrnetu lze mít přístupné jen webové stránky. Toto není moje volba, ale ze
+strany GyArab. K hostování něčeho jiného, než webovky je potřeba se dohodnout s
 profesorem Kahounem, aby otevřel požadovaný port. Asi mu nemusíte psát sami,
 můžu to zařídit kdyžtak za vás :) (sám to také musím povolit ve firewall)
 
@@ -41,10 +42,10 @@ nebo popřípadě z počítače tunelovat na server.
 
 Na portu 443 (HTTPS) a 80 (HTTP) běží `caddy` server [1]. Konfigurační soubor lze pouze upravovat
 jako root. Normální uživatelé mohou využít příkaz `sudo avava-web`, aby si zaregistrovali doménu.
-Doménu buď musíte vlastnit, nebo můžete využít jakoukoliv ve tvaru `*.svs.gyarab.cz` nebo `*.ecko.ga`.
+Doménu buď musíte vlastnit, nebo můžete využít jakoukoliv ve tvaru `*.svs.gyarab.cz`.
 
 Caddy si automaticky obstará TLS certifikát, takže bude web fungovat i přes HTTPS. Výchozí
-nastavení je zkusit nalézt soubor v `/var/caddy.root.d/domena/` a pokud není nalezen,
+nastavení je zkusit nalézt soubor v `/var/caddy.root.d/domena/`, a pokud soubor nebyl nalezen,
 tak zkusit reverse proxy na zvolený port.
 
 Schéma:
@@ -64,6 +65,10 @@ Schéma:
 ```
 
 [1] https://caddyserver.com/
+
+## Návody
+
+Návody můžete najít na https://guides.svs.gyarab.cz/.
 
 ## Kontakt
 
