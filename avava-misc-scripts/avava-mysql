@@ -76,9 +76,11 @@ delete_db() {
     fi;
     if ! list_db $USR | grep -q "$2"; then
         echo "k databazi nemate pristup nebo neexistuje";
+        exit 1;
     fi;
-    sed -i "/^$USR $2/d" $DB_FILE;
     ask_yes "Prejete si smazat databazi '$2'?";
+    echo "deleting db '$2' for $USR" | logger -t avava-mysql;
+    sed -i "/^$USR $2/d" $DB_FILE;
     {
         echo "DROP USER '$2'@'localhost';";
         echo "DROP DATABASE $2;";

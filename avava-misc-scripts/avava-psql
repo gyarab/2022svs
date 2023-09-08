@@ -77,10 +77,10 @@ delete_db() {
     fi;
     if ! list_db $USR | grep -q "$2"; then
         echo "k databazi nemate pristup nebo neexistuje";
-    exit 1;
+        exit 1;
     fi;
-    echo "deleting db '$2' for $USR" | logger -t avava-psql;
     ask_yes "Prejete si smazat databazi '$2'?";
+    echo "deleting db '$2' for $USR" | logger -t avava-psql;
     sed -i "/^$USR $2/d" $DB_FILE;
     {
         echo "DROP DATABASE \"$2\";";
