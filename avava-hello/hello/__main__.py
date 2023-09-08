@@ -83,7 +83,7 @@ def create_account(username):
     signal.signal(signal.SIGTERM, sigter_orig)
 
     print(
-        f"\nUcet {username} byl uspesne vytvoren, prihlaseni je mozne pouze pres\n"
+        f"\nUcet {username} byl uspesne vytvoren, prihlaseni mimo GyArab je mozne pouze pres\n"
         "SSH klice (Google: SSH private/public key authentication).\n\n"
         "Prosim vytvorte si klic a vlozte sem jeho verejnou cast\n"
         've forme "ssh-rsa AAAAB3NzaC1yc2E...Q02P1Eamz/nT4I3 root@localhost" (OpenSSH format)'
@@ -96,8 +96,9 @@ def create_account(username):
             break
         print("Toto nevypada jako spravne naformatovany klic. Zkuste to znovu:")
 
-    with open(f"/home/{username}/.ssh/authorized_keys", "a+") as f:
-        f.write(ssh_key + "\n")
+    if not run_admin_script("/opt/avava-hello/update-auth-keys.sh", username, ssh_key):
+        print("Nastala neocekavana chyba pri pridavani SSH klice. Prosim kontaktujte administratora.")
+        return
 
     print(
         "\nKlic pridan do authorized_keys, zkuste se prihlasit. Vice informaci\n"
@@ -120,7 +121,7 @@ def recover_account(username):
             break
         print("Toto nevypada jako spravne naformatovany klic. Zkuste to znovu:")
 
-    if not run_admin_script("/opt/avava-hello/recoveruser.sh", username, ssh_key):
+    if not run_admin_script("/opt/avava-hello/update-auth-keys.sh", username, ssh_key):
         print(
             "Nastala neocekavana chyba pri resetovani pristupu. Prosim kontaktujte administratora."
         )

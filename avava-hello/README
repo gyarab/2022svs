@@ -3,3 +3,6 @@ as a ForcedCommand when a user connects to hello@svs.gyarab.cz.
 
 A build is just a zip archive of the `hello` folder. You can
 run the archive using the standard CPython interpreter.
+
+The main application calls additional scripts. These need to be allowed to run
+as root through sudo for the user running the script.
