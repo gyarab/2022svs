@@ -1,11 +1,28 @@
 #!/bin/bash
 
+SCRIPT_NAME="$(basename "$0")"
+
+case "$SCRIPT_NAME" in
+    avava-psql)
+        DATABASE_NAME=PostgreSQL
+        ;;
+    avava-mysql)
+        DATABASE_NAME=MySQL
+        ;;
+    *)
+        exit 1
+        ;;
+esac
+
 if [ $EUID -ne 0 ]; then
     echo "Tento skript musi byt spusten jako root (sudo)";
     exit 1;
 fi;
 
-DB_FILE=/opt/avava-misc-scripts/avava-mysql-db
+# load db specific functions
+source "/opt/avava-misc-scripts/$SCRIPT_NAME-lib"
+DB_FILE="/opt/avava-misc-scripts/$SCRIPT_NAME-db"
+
 USR=${SUDO_USER:-root}
 SCRIPT=0
 
@@ -24,31 +41,22 @@ ask_yes() {
     esac
 }
 
-user_exists() {
-    mysql -sNe "SELECT user FROM mysql.user WHERE user='$1'" | grep -q "$1"
-}
-
 new_db() {
     if ! [[ "$2" =~ ^[a-zA-Z0-9.@-]+$ ]]; then
         echo "$2";
         echo "Popisek musi byt ve tvaru [a-zA-Z0-9.@-]+";
         exit 1;
     fi;
-    ask_yes "Prejete si vytvorit novou databazi s popiskem '$2'?";
+    ask_yes "Prejete si vytvorit novou $DATABASE_NAME databazi s popiskem '$2'?";
 
     password=$(pwgen 20 1);
     db="db$(shuf -i1000-9999 -n1)";
-    while user_exists "$db"; do
+    while db_exists "$db"; do
         db="db$(shuf -i1000-9999 -n1)";
     done;
-    echo "creating new db '$db' for $USR" | logger -t avava-mysql
+    echo "creating new db '$db' for $USR" | logger -t "$SCRIPT_NAME";
     echo "$USR $db $2" >> $DB_FILE;
-    {
-        echo "CREATE USER '$db'@'localhost' IDENTIFIED BY '$password';";
-        echo "CREATE DATABASE $db;";
-        echo "GRANT ALL ON $db.* TO '$db'@'localhost';"
-        echo "FLUSH PRIVILEGES;";
-    } | mysql -sN
+    create_db "$db" "$password"
 
     if [[ $SCRIPT -eq 0 ]]; then
         echo "nazev db a uzivatele: $db";
@@ -60,12 +68,12 @@ new_db() {
 }
 
 list_db() {
-    echo "uzivatel databaze/db_uzivatel popisek";
-    echo "listing db for $1" | logger -t avava-mysql
+    [[ $SCRIPT -eq 0 ]] && echo "uzivatel database/db_user popisek";
+    echo "listing db for $1" | logger -t "$SCRIPT_NAME";
     if [ "$1" == "root" ]; then
         cat $DB_FILE;
     else
-        grep "^$1 " $DB_FILE;
+        grep "^$1 " $DB_FILE || true;  # suppress grep's exit code 1
     fi;
 }
 
@@ -79,16 +87,13 @@ delete_db() {
         exit 1;
     fi;
     ask_yes "Prejete si smazat databazi '$2'?";
-    echo "deleting db '$2' for $USR" | logger -t avava-mysql;
+    echo "deleting db '$2' for $USR" | logger -t "$SCRIPT_NAME";
     sed -i "/^$USR $2/d" $DB_FILE;
-    {
-        echo "DROP USER '$2'@'localhost';";
-        echo "DROP DATABASE $2;";
-        echo "FLUSH PRIVILEGES;";
-    } | mysql -sN
+    remove_db "$2"
 }
+
 help() {
-    echo "sudo avava-mysql help|new|list|delete ...";
+    echo "sudo $SCRIPT_NAME help|new|list|delete ...";
     echo "    new <popisek>     vytvori novou databazi s popiskem <popisek>, popisek je jen";
     echo "                      pro zapamatovani, nazev i jmeno uzivatele bude vygenerovano";
     echo "    list              zobrazi vsechny vytvorene databaze";

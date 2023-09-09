@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# 1 - db name
+db_exists() {
+    psql -U postgres -lqt | cut -d \| -f 1 | grep -qw $1
+}
+
+# 1 - db name 2 - password
+create_db() {
+    {
+        echo "CREATE ROLE "$1" LOGIN PASSWORD '$2';";
+        echo "CREATE DATABASE "$1" WITH OWNER "$1";";
+        echo "REVOKE ALL ON DATABASE "$1" FROM PUBLIC;";
+    } | psql -q -U postgres
+    # correct public schema owner
+    psql -q -U postgres -d "$1" -c "ALTER SCHEMA public OWNER TO \"$1\"";
+}
+
+# 1 - db name
+remove_db() {
+    {
+        echo "DROP DATABASE \"$1\";";
+        echo "DROP ROLE \"$1\";";
+    } | psql -q -U postgres;
+}

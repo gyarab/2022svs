@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# 1 - db name
+db_exists() {
+    mysql -sNe "SELECT user FROM mysql.user WHERE user='$1'" | grep -q "$1"
+}
+
+# 1 - db name 2 - password
+create_db() {
+    {
+        echo "CREATE USER '$1'@'localhost' IDENTIFIED BY '$2';";
+        echo "CREATE DATABASE $1;";
+        echo "GRANT ALL ON $1.* TO '$1'@'localhost';"
+        echo "FLUSH PRIVILEGES;";
+    } | mysql -sN
+}
+
+# 1 - db name
+remove_db() {
+    {
+        echo "DROP USER '$1'@'localhost';";
+        echo "DROP DATABASE $1;";
+        echo "FLUSH PRIVILEGES;";
+    } | mysql -sN
+}
