@@ -42,8 +42,8 @@ check_collision() {
 }
 
 # create a default DB for the user if we have the script for it
-if [[ -x "/opt/avava-misc-scripts/avava-psql" ]]; then
-    db="$(SUDO_USER="$user" /opt/avava-misc-scripts/avava-psql --script new default-db)"
+if [[ -x "/usr/local/bin/avava-psql" ]]; then
+    db="$(SUDO_USER="$user" /usr/local/bin/avava-psql --script new default-db)"
     db_id="$(cut -d " " -f 1 <<< "$db")"
     db_pass="$(cut -d " " -f 2 <<< "$db")"
 
