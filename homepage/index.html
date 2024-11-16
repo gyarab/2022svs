@@ -1,65 +1,69 @@
 <!DOCTYPE html>
 <html lang="cs">
-<head>
-    <title>avava.gyarab.cz</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Studentský vývojový server">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <main>
-        <h1>Vítejte na studentském vývojovém serveru AVAVA</h1>
-        <p>
-            Server je k dispozici pouze žákům Gymnázia Arabská. Studenti mohou
-            tento server využívat ke zveřejnění svých různorodých studentských
-            projektů a ročníkových prací.
-        </p>
-        <h2>Jak se mohu registrovat?</h2>
-        <p>
-            Tvorba účtů je automatická a hlídána přes Google OAuth. Na server se lze
-            zaregistrovat jedině přes studentský email GyArab.
-            Pro vytvoření nového účtu se připojte přes SSH na:
-        </p>
-        <pre><code>$ ssh hello@svs.gyarab.cz</code></pre>
-        <p>
-            <details>
-                <summary>Nechci TOFU!</summary>
-                Aby nebylo potřeba <a href="https://en.wikipedia.org/wiki/Trust_on_first_use">TOFU</a>,
-                můžete SSH host klíč stáhnout <a href="/sshhostkey.txt">zde</a> a dát si ho do 
-                <code>known_hosts</code> souboru. Získání klíče serveru touto metodou je bezpečnejší,
-                ale není potřeba.
-            </details>
-        </p>
+	<head>
+		<title>avava.gyarab.cz</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content="Studentský vývojový server" />
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body>
+		<main>
+			<h1>Vítejte na studentském vývojovém serveru AVAVA</h1>
+			<p>
+				Server je k dispozici pouze žákům Gymnázia Arabská. Studenti mohou tento server využívat ke zveřejnění svých různorodých studentských
+				projektů a ročníkových prací.
+			</p>
+			<h2>Jak se mohu registrovat?</h2>
+			<p>
+				Tvorba účtů je automatická a hlídána přes Google OAuth. Na server se lze zaregistrovat jedině přes studentský email GyArab. Pro
+				vytvoření nového účtu se připojte přes SSH na:
+			</p>
+			<pre><code>$ ssh hello@svs.gyarab.cz</code></pre>
+			<p>
+				<details>
+					<summary>Nechci TOFU!</summary>
+					Aby nebylo potřeba <a href="https://en.wikipedia.org/wiki/Trust_on_first_use">TOFU</a>, můžete SSH host klíč stáhnout
+					<a href="/sshhostkey.txt">zde</a> a dát si ho do <code>known_hosts</code> souboru. Získání klíče serveru touto metodou je
+					bezpečnejší, ale není potřeba.
+				</details>
+			</p>
 
-        <h2>Jak udělám ...?</h2>
-        <p>
-            Můžeš se podívat na naše <a href="https://guides.svs.gyarab.cz">návody</a>, nebo na
-            <a href="/vitej">uvítací stránku</a> s dalšími informacemi.
-        </p>
-        <p><small>Na serveru logy nešetříme, prosím neprovádějte žádné neplechy :)</small></p>
-        <p>Kontakt: adam.suchy&lt;at&gt;student.gyarab.cz</p>
+			<h2>Jak udělám ...?</h2>
+			<p>
+				Můžeš se podívat na naše <a href="https://guides.svs.gyarab.cz">návody</a>, nebo na <a href="/vitej">uvítací stránku</a> s dalšími
+				informacemi.
+			</p>
 
-        <hr/>
-        <h2>Bezpečnostní upozornění a administrační zákroky</h2>
-        <div style="max-height: 15em; overflow-y: scroll;">
-            <p>
-                <b>2023-06-04:</b> <code>ecko.ga</code> doména byla zrušena. Gabon se rozhodl zrušit dohodu s
-                poskytovatelem Freenom a předal kontrolu nad <code>.ga</code> TLD do rukou Afnic.
-                <a href="https://news.ycombinator.com/item?id=36183824">HN link</a>
-            </p>
-            <p> 
-                <b>2022-11-08:</b> Pro všechny uživatele byl spuštěn skript <code>/opt/profile-fix</code>.
-                Uživateli to správně připíše <code>PGUSER</code> do <code>.profile</code> souboru, aby bylo možné
-                spustit <code>psql</code> bez žádných argumentů.
-            </p>
-            <p>
-                <b>2022-10-31:</b> V často používané knihovně <code>OpenSSL 3.0</code> byla ohlášena kritická 
-                bezpečností chyba. 1. 11. 2022 bude vydána verze <code>3.0.7</code>, která tuto chybu opraví.
-                Na OpenSSL 3.0 závisí PostgreSQL server. 
-                <a href="https://www.openssl.org/blog/blog/2022/11/01/email-address-overflows/">link</a>
-            </p>
-        </div>
-    </main>
-</body>
+			<h2>Arabské CTF</h2>
+			<p>Chcete si vyzkoušet svou Linuxovou zručnost? Zkuste naší CTF hru!</p>
+			<pre><code>$ ssh ctf@svs.gyarab.cz</code></pre>
+			<p><small>Na serveru logy nešetříme, prosím neprovádějte žádné neplechy :)</small></p>
+			<p><b>Kontakt:</b></p>
+			<ul>
+				<li>adam.suchy&lt;at&gt;student.gyarab.cz, 4.E</li>
+				<li>oliver.hurt&lt;at&gt;student.gyarab.cz, 3.E</li>
+				<li>kristian.kunc&lt;at&gt;student.gyarab.cz, 2.E</li>
+			</ul>
+
+			<hr />
+			<h2>Bezpečnostní upozornění a administrační zákroky</h2>
+			<div style="max-height: 15em; overflow-y: scroll">
+				<p>
+					<b>2023-06-04:</b> <code>ecko.ga</code> doména byla zrušena. Gabon se rozhodl zrušit dohodu s poskytovatelem Freenom a předal
+					kontrolu nad <code>.ga</code> TLD do rukou Afnic.
+					<a href="https://news.ycombinator.com/item?id=36183824">HN link</a>
+				</p>
+				<p>
+					<b>2022-11-08:</b> Pro všechny uživatele byl spuštěn skript <code>/opt/profile-fix</code>. Uživateli to správně připíše
+					<code>PGUSER</code> do <code>.profile</code> souboru, aby bylo možné spustit <code>psql</code> bez žádných argumentů.
+				</p>
+				<p>
+					<b>2022-10-31:</b> V často používané knihovně <code>OpenSSL 3.0</code> byla ohlášena kritická bezpečností chyba. 1. 11. 2022 bude
+					vydána verze <code>3.0.7</code>, která tuto chybu opraví. Na OpenSSL 3.0 závisí PostgreSQL server.
+					<a href="https://www.openssl.org/blog/blog/2022/11/01/email-address-overflows/">link</a>
+				</p>
+			</div>
+		</main>
+	</body>
 </html>
