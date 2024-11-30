@@ -75,12 +75,9 @@ Návody můžete najít na https://guides.svs.gyarab.cz/.
 Sice je registrační proces automatizovaný, ale neočekávám, že nenastanou problémy, nebo
 že tu bude všechno nainstalované, *ptejte se kdyby něco nefungovalo / když něco potřebujete*!
 
-`adam.suchy<at>student.gyarab.cz`
+`oliver.hurt<at>student.gyarab.cz, 4.E`
 
-## Údržby / notifikace
-
-Pro přihlášení se k odběru zpráv o údržbách AVAVy můžete využít příkaz `sudo
-avava-notifier`. Pro odhlášení ho spusťte znovu.
+`kristian.kunc<at>student.gyarab.cz, 3.E`
 
 
 A ještě jednou, prosím nedělejte neplechu :) Logů je dost na osobní identifikaci.
