@@ -148,8 +148,8 @@ def main():
        .#%%+=++==---===+==*:+=
        =++- .:-===++===-: := =.
     \u001b[0m
-    Pro vytvoreni noveho uctu se prihlaste pomoci sveho studentskeho 
-    @student.gyarab.cz Google uctu zde: \u001b[4mhttps://auth.svs.gyarab.cz/\u001b[0m.
+    Pro vytvoreni noveho uctu se prihlaste pomoci sveho skolniho
+    @*.gyarab.cz Google uctu zde: \u001b[4mhttps://auth.svs.gyarab.cz/\u001b[0m.
 """
     )
 
