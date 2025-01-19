@@ -172,8 +172,10 @@ def main():
         syslog.syslog(syslog.LOG_WARNING, "rejecting token; invalid email?")
         print("Neplatny email?!")
         return
+    
     username, domain = email.split("@")
-    if domain != "student.gyarab.cz":
+    allowed_domains = ["gyarab.cz", "student.gyarab.cz"]
+    if domain not in allowed_domains:
         syslog.syslog(
             syslog.LOG_WARNING,
             f"rejecting token; email not from gyarab {username}@{domain}",
